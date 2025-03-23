@@ -1,0 +1,4 @@
+mypy
+pytest
+gwpy
+tqdm
