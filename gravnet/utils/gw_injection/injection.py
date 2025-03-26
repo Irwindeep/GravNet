@@ -1,8 +1,8 @@
 import numpy as np
-from gwpy.timeseries import TimeSeries as gwpyTimeSeries
+from gwpy.timeseries import TimeSeries as gwpyTimeSeries # type: ignore
 from pycbc.types import TimeSeries as pycbcTimeSeries # type: ignore
 from pycbc.filter import matchedfilter # type: ignore
-from pycbc.psd import interpolate
+from pycbc.psd import interpolate # type: ignore
 from .simulation import adjust_simulated_waveform
 
 from numpy.typing import NDArray
@@ -15,12 +15,12 @@ def inject_waveform(
     noise: NDArray[np.float64], waveform: pycbcTimeSeries,
     snr: float, desired_length: float
 ) -> Tuple[NDArray[np.float64], float]:
-    noise = gwpyTimeSeries(noise, t0=0, dt=waveform.delta_t)
+    noise_gwpy = gwpyTimeSeries(noise, t0=0, dt=waveform.delta_t)
 
     waveform_len = len(waveform.data)
     waveform.resize(4096)
 
-    noise_psd = noise.psd().to_pycbc()
+    noise_psd = noise_gwpy.psd().to_pycbc()
     noise_psd = interpolate(noise_psd, delta_f=waveform.delta_f)
 
     current_snr = matchedfilter.sigma(waveform, noise_psd, low_frequency_cutoff=20)
@@ -30,5 +30,5 @@ def inject_waveform(
     scaled_waveform.resize(waveform_len)
     adjusted_waveform = adjust_simulated_waveform(scaled_waveform, desired_length=desired_length)
     
-    gw_scaled = noise.value + adjusted_waveform.data
-    return gw_scaled, scaling_factor
+    gw_scaled = noise + adjusted_waveform.data
+    return gw_scaled.data, scaling_factor
