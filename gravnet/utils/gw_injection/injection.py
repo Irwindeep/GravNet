@@ -1,34 +1,33 @@
 import numpy as np
-from gwpy.timeseries import TimeSeries as gwpyTimeSeries # type: ignore
-from pycbc.types import TimeSeries as pycbcTimeSeries # type: ignore
-from pycbc.filter import matchedfilter # type: ignore
-from pycbc.psd import interpolate # type: ignore
-from .simulation import adjust_simulated_waveform
+from scipy.signal import welch # type: ignore
+from pycbc.types import TimeSeries # type: ignore
 
 from numpy.typing import NDArray
 from typing import Tuple
 
 SEG_LEN = 4096
-SEG_STRIDE = 2048
+SAMPLING_FREQ = 1/4096
 
 def inject_waveform(
-    noise: NDArray[np.float64], waveform: pycbcTimeSeries,
-    snr: float, desired_length: float
+    noise: NDArray[np.float64], waveform: TimeSeries,
+    snr: float
 ) -> Tuple[NDArray[np.float64], float]:
-    noise_gwpy = gwpyTimeSeries(noise, t0=0, dt=waveform.delta_t)
-
-    waveform_len = len(waveform.data)
-    waveform.resize(4096)
-
-    noise_psd = noise_gwpy.psd().to_pycbc()
-    noise_psd = interpolate(noise_psd, delta_f=waveform.delta_f)
-
-    current_snr = matchedfilter.sigma(waveform, noise_psd, low_frequency_cutoff=20)
-    scaling_factor = snr/current_snr
-
-    scaled_waveform = scaling_factor * waveform
-    scaled_waveform.resize(waveform_len)
-    adjusted_waveform = adjust_simulated_waveform(scaled_waveform, desired_length=desired_length)
+    frequencies, psd_strain = welch(noise, SAMPLING_FREQ, nperseg=SEG_LEN)
     
-    gw_scaled = noise + adjusted_waveform.data
+    N = len(waveform)
+    H_f = np.fft.rfft(waveform)
+
+    freq_template = np.fft.rfftfreq(N, 1/SAMPLING_FREQ)
+
+    psd_interp = np.interp(freq_template, frequencies, psd_strain)
+
+    df = freq_template[1] - freq_template[0]
+    integrand = (np.abs(H_f)**2) / psd_interp
+    current_snr = np.sqrt(4.0 * np.sum(integrand) * df)
+    print(current_snr)
+
+    scaling_factor = snr/current_snr
+    scaled_waveform = scaling_factor * waveform
+    
+    gw_scaled = noise + scaled_waveform.data
     return gw_scaled.data, scaling_factor
