@@ -2,3 +2,6 @@ mypy
 pytest
 gwpy
 tqdm
+numpy
+pandas
+pycbc

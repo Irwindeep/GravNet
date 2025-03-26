@@ -1,3 +1,6 @@
 .venv/
 segments/
 .mypy_cache/
+dataset/
+__pycache__/
+.pytest_cache/
