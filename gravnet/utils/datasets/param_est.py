@@ -11,9 +11,8 @@ from gravnet.utils.gw_injection import (
 from typing import Tuple
 
 class ParamEstData(GWDataset):
-    def __init__(self, root, split, download = False, cleanup = True, output_scaler: float = 1e18) -> None:
+    def __init__(self, root, split, download = False, cleanup = True) -> None:
         super().__init__(root, split, download, cleanup)
-        self.output_scaler = output_scaler
         self.split_df = self.split_df[self.split_df["category"] > 0]
 
     def __len__(self) -> int:
@@ -29,7 +28,7 @@ class ParamEstData(GWDataset):
         noise = np.load(noise_file)
         injected_waveform, _ = inject_waveform(noise, waveform, snr)
 
-        return torch.tensor(self.output_scaler*injected_waveform, dtype=torch.float32)
+        return torch.tensor(injected_waveform, dtype=torch.float32)
     
     def __getitem__(self, index) -> Tuple[torch.Tensor, torch.Tensor]:
         row = self.split_df.iloc[index]
