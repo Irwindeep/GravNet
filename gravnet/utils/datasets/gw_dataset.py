@@ -17,7 +17,7 @@ class GWDataset(Dataset):
         self.download = download
 
         if self.download:
-            file_url = 'https://drive.google.com/uc?id=YOUR_FILE_ID'
+            file_url = "https://drive.google.com/file/d/1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
             output_path = os.path.join(self.root, 'dataset.zip')
 
             gdown.download(file_url, output_path, quiet=False)
