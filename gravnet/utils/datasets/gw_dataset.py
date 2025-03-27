@@ -10,14 +10,14 @@ from typing import Any
 class GWDataset(Dataset):
     def __init__(self, root: str, split: str, download: bool = False, cleanup: bool = True) -> None:
         self.root = root
-        if not os.path.exists(os.path.join(self.root, "dataset")):
-            raise RuntimeError(f"No Data found at {os.path.abspath(self.root)}")
+        if not os.path.exists(self.root):
+            os.makedirs(self.root)
 
         self.split = split
         self.download = download
 
         if self.download:
-            file_url = "https://drive.google.com/file/d/1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
+            file_url = "https://drive.google.com/uc?id=1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
             output_path = os.path.join(self.root, 'dataset.zip')
 
             gdown.download(file_url, output_path, quiet=False)
