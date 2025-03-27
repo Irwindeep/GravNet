@@ -29,4 +29,6 @@ def inject_waveform(
     scaled_waveform = scaling_factor * waveform
     
     gw_scaled = noise + scaled_waveform.data
+    gw_scaled = np.fft.irfft(np.fft.rfft(gw_scaled)/psd_interp**0.5).real
+
     return gw_scaled, scaling_factor

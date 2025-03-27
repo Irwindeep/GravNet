@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import welch # type: ignore
 
 from pycbc.filter import matched_filter # type: ignore
-from pycbc.types import TimeSeries, FrequencySeries # type: ignore
+from gwpy.timeseries import TimeSeries # type: ignore
 from gravnet.utils.gw_injection import (
     generate_simulated_waveform,
     inject_waveform,
@@ -28,11 +28,14 @@ class TestBBHInj(unittest.TestCase):
 
     def test_inj_snr(self):
         fs = 1/4096
-        _, noise_psd = welch(self.noise, fs, nperseg=4096)
+        freqs, noise_psd = welch(self.noise, fs, nperseg=4096)
+        freq_template = np.fft.rfftfreq(4096, 4096)
+        psd_interp = np.interp(freq_template, freqs, noise_psd)
+
+        waveform = np.fft.irfft(np.fft.rfft(self.bbh_waveform.data)/psd_interp**0.5).real
         snr = matched_filter(
-            self.bbh_waveform,
-            TimeSeries(self.injected_signal, delta_t=1/4096),
-            psd=FrequencySeries(noise_psd, delta_f=1)
+            TimeSeries(waveform, dt=1/4096, t0=0).to_pycbc(),
+            TimeSeries(self.injected_signal, dt=1/4096, t0=0).to_pycbc(),
         )
 
         np.testing.assert_almost_equal(np.max(np.abs(snr.data)), 7.5, decimal=0)
@@ -56,11 +59,14 @@ class TestBNSInj(unittest.TestCase):
 
     def test_inj_snr(self):
         fs = 1/4096
-        _, noise_psd = welch(self.noise, fs, nperseg=4096)
+        freqs, noise_psd = welch(self.noise, fs, nperseg=4096)
+        freq_template = np.fft.rfftfreq(4096, 4096)
+        psd_interp = np.interp(freq_template, freqs, noise_psd)
+
+        waveform = np.fft.irfft(np.fft.rfft(self.bns_waveform.data)/psd_interp**0.5).real
         snr = matched_filter(
-            self.bns_waveform,
-            TimeSeries(self.injected_signal, delta_t=1/4096),
-            psd=FrequencySeries(noise_psd, delta_f=1)
+            TimeSeries(waveform, dt=1/4096, t0=0).to_pycbc(),
+            TimeSeries(self.injected_signal, dt=1/4096, t0=0).to_pycbc(),
         )
 
         np.testing.assert_almost_equal(np.max(np.abs(snr.data)), 7.5, decimal=0)
