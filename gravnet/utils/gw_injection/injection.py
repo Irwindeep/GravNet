@@ -24,10 +24,9 @@ def inject_waveform(
     df = freq_template[1] - freq_template[0]
     integrand = (np.abs(H_f)**2) / psd_interp
     current_snr = np.sqrt(4.0 * np.sum(integrand) * df)
-    print(current_snr)
 
     scaling_factor = snr/current_snr
     scaled_waveform = scaling_factor * waveform
     
     gw_scaled = noise + scaled_waveform.data
-    return gw_scaled.data, scaling_factor
+    return gw_scaled, scaling_factor
