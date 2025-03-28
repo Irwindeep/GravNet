@@ -15,44 +15,47 @@ class GWDataset(Dataset):
 
         self.split = split
         self.download = download
-        self._setup_rom_data()
 
         if self.download:
-            already_exists = False
-            if os.path.exists(os.path.join(self.root, "dataset")):
-                already_exists = (
-                    len(os.listdir(os.path.join(self.root, "dataset"))) == 2 and
-                    len(os.listdir(os.path.join(self.root, "dataset", "gwaves"))) == 256379
-                )
-
-            if already_exists: print("Files aleady downloaded and verified")
-            else:
-                file_url = "https://drive.google.com/uc?id=1lqDJOeLvCrPR34QXVZzN4pMIz8RQPmqy"
-                output_path = os.path.join(self.root, 'dataset.zip')
-
-                gdown.download(file_url, output_path, quiet=False)
-                with zipfile.ZipFile(output_path, 'r') as zip_ref:
-                    zip_ref.extractall(self.root)
-
-                if cleanup: os.remove(os.path.join(self.root, "dataset.zip"))
+            os.makedirs(f"{self.root}/dataset", exist_ok=True)
+            self._load_dataset(cleanup)
+            
+            os.makedirs(f"{self.root}/dataset/simulations", exist_ok=True)
+            self._load_simulations(cleanup)
 
         self.split_df = self._prepare_split()
-        
-    def _setup_rom_data(self):
-        default_data_path = "/usr/local/share/lalsuite"
-        if "LAL_DATA_PATH" not in os.environ:
-            os.environ["LAL_DATA_PATH"] = default_data_path
 
-        lal_data_dir = os.environ["LAL_DATA_PATH"]
-        if not os.path.exists(lal_data_dir): os.makedirs(lal_data_dir)
+    def _load_dataset(self, cleanup: bool):
+        already_exists = (
+            os.path.exists(os.path.join(self.root, "dataset", "gwaves")) and
+            len(os.listdir(os.path.join(self.root, "dataset", "gwaves"))) == 256379
+        )
+        if already_exists: print("Files aleady downloaded and verified")
+        else:
+            file_url = "https://drive.google.com/uc?id=1lqDJOeLvCrPR34QXVZzN4pMIz8RQPmqy"
+            output_path = os.path.join(self.root, "dataset.zip")
 
-        required_filename = "SEOBNRv4ROM_v3.0.hdf5"
-        required_filepath = os.path.join(lal_data_dir, required_filename)
+            gdown.download(file_url, output_path, quiet=False)
+            with zipfile.ZipFile(output_path, 'r') as zip_ref:
+                zip_ref.extractall(self.root)
 
-        if not os.path.exists(required_filepath):
-            file_url = "https://git.ligo.org/waveforms/software/lalsuite-waveform-data/-/raw/main/waveform_data/SEOBNRv4ROM_v3.0.hdf5"
-            gdown.download(file_url, required_filepath, quiet=False)
-        else: print(f"{required_filename} found at {required_filepath}")
+            if cleanup: os.remove(os.path.join(self.root, "dataset.zip"))
+
+    def _load_simulations(self, cleanup):
+        already_exists = (
+            os.path.exists(os.path.join(self.root, "dataset", "simulations")) and
+            len(os.listdir(os.path.join(self.root, "dataset", "simulations"))) == 120815
+        )
+        if already_exists: print("Files aleady downloaded and verified")
+        else:
+            file_url = "https://drive.google.com/uc?id=1pVXt-qDxMUeTxi8M789VjIe8DBqEZJTe"
+            output_path = os.path.join(self.root, "dataset", "simulations.zip")
+
+            gdown.download(file_url, output_path, quiet=False)
+            with zipfile.ZipFile(output_path, 'r') as zip_ref:
+                zip_ref.extractall(os.path.join(self.root, "dataset"))
+
+            if cleanup: os.remove(os.path.join(self.root, "dataset", "simulations.zip"))
 
     def _prepare_split(self) -> pd.DataFrame:
         np.random.seed(12)

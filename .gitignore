@@ -4,3 +4,4 @@ segments/
 dataset/
 __pycache__/
 .pytest_cache/
+lalsuite/
