@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
+import torch
 from torch.utils.data import Dataset
 
 import gdown # type: ignore
@@ -24,6 +25,8 @@ class GWDataset(Dataset):
             self._load_simulations(cleanup)
 
         self.split_df = self._prepare_split()
+        self._cache_dir = os.path.join(self.root, "cache", self.split)
+        os.makedirs(self._cache_dir, exist_ok=True)
 
     def _load_dataset(self, cleanup: bool):
         already_exists = (
@@ -111,6 +114,15 @@ class GWDataset(Dataset):
 
     def __len__(self) -> int:
         return len(self.split_df)
-        
+    
     def __getitem__(self, index: Any) -> Any:
-        raise NotImplementedError("`__getitem__` not implemented for the chosen dataset")
+        cache_file = os.path.join(self._cache_dir, f"{index}.pt")
+        if os.path.exists(cache_file):
+            return torch.load(cache_file)
+        
+        item = self._get_item(index)
+        torch.save(item, cache_file)
+        return item
+
+    def _getitem(self, index: Any) -> Any:
+        raise NotImplementedError("`_getitem` not implemented for the chosen dataset")

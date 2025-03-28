@@ -20,7 +20,7 @@ class WaveDetData(GWDataset):
         )
         return torch.tensor(injected_waveform, dtype=torch.float32)
     
-    def __getitem__(self, index) -> Tuple[torch.Tensor, torch.Tensor]:
+    def _getitem(self, index) -> Tuple[torch.Tensor, torch.Tensor]:
         row = self.split_df.iloc[index]
 
         noise_file = os.path.join(self.root, "dataset", "gwaves", row["data_file"])
