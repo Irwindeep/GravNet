@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from scipy.signal import welch
 import torch
 from .gw_dataset import GWDataset
 
@@ -30,7 +31,12 @@ class NoiseSegData(GWDataset):
 
         noise_file = os.path.join(self.root, "dataset", "gwaves", row["data_file"])
         noise = np.load(noise_file)
-        if row["category"] == 0: signal = torch.tensor(noise, dtype=torch.float32)
+        if row["category"] == 0:
+            frequencies, psd_strain = welch(noise, 1/4096, nperseg=4096)
+            freq_template = np.fft.rfftfreq(4096, 4096)
+            psd_interp = np.interp(freq_template, frequencies, psd_strain)
+            noise = np.fft.irfft(np.fft.rfft(noise)/psd_interp**0.5).real
+            signal = torch.tensor(noise, dtype=torch.float32)
         else:
             m1, m2, snr = row["m1"], row["m2"], row["snr"]
             approximant = "SEOBNRv4" if row["category"] == 1 else "TaylorF2"
