@@ -42,5 +42,9 @@ class NoiseSegData(GWDataset):
             approximant = "SEOBNRv4" if row["category"] == 1 else "TaylorF2"
 
             signal = self._prepare_synth_data(noise, approximant, m1, m2, snr)
+            frequencies, psd_strain = welch(noise, 1/4096, nperseg=4096)
+            freq_template = np.fft.rfftfreq(4096, 4096)
+            psd_interp = np.interp(freq_template, frequencies, psd_strain)
+            noise = np.fft.irfft(np.fft.rfft(noise)/psd_interp**0.5).real
 
         return signal, torch.tensor(noise, dtype=torch.float32)
