@@ -35,7 +35,7 @@ class ParamEstData(GWDataset):
 
         noise_file = os.path.join(self.root, "dataset", "gwaves", row["data_file"])
         m1, m2, snr = row["m1"], row["m2"], row["snr"]
-        approximant = "SEOBNRv4" if row["category"] == 1 else "TaylorF2"
+        approximant = "SEOBNRv4_ROM" if row["category"] == 1 else "TaylorF2"
 
         injected_signal = self._prepare_synth_data(noise_file, approximant, m1, m2, snr)
         params = torch.tensor([m1, m2, snr], dtype=torch.float32)

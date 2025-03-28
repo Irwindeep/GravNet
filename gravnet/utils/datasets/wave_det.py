@@ -39,7 +39,7 @@ class WaveDetData(GWDataset):
             signal = torch.tensor(noise, dtype=torch.float32)
         else:
             m1, m2, snr = row["m1"], row["m2"], row["snr"]
-            approximant = "SEOBNRv4" if row["category"] == 1 else "TaylorF2"
+            approximant = "SEOBNRv4_ROM" if row["category"] == 1 else "TaylorF2"
 
             signal = self._prepare_synth_data(noise, approximant, m1, m2, snr)
 
