@@ -15,6 +15,7 @@ class GWDataset(Dataset):
 
         self.split = split
         self.download = download
+        self._setup_rom_data()
 
         if self.download:
             already_exists = False
@@ -26,7 +27,7 @@ class GWDataset(Dataset):
 
             if already_exists: print("Files aleady downloaded and verified")
             else:
-                file_url = "https://drive.google.com/uc?id=1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
+                file_url = "https://drive.google.com/uc?id=1lqDJOeLvCrPR34QXVZzN4pMIz8RQPmqy"
                 output_path = os.path.join(self.root, 'dataset.zip')
 
                 gdown.download(file_url, output_path, quiet=False)
@@ -36,6 +37,22 @@ class GWDataset(Dataset):
                 if cleanup: os.remove(os.path.join(self.root, "dataset.zip"))
 
         self.split_df = self._prepare_split()
+        
+    def _setup_rom_data(self):
+        default_data_path = "/usr/local/share/lalsuite"
+        if "LAL_DATA_PATH" not in os.environ:
+            os.environ["LAL_DATA_PATH"] = default_data_path
+
+        lal_data_dir = os.environ["LAL_DATA_PATH"]
+        if not os.path.exists(lal_data_dir): os.makedirs(lal_data_dir)
+
+        required_filename = "SEOBNRv4ROM_v3.0.hdf5"
+        required_filepath = os.path.join(lal_data_dir, required_filename)
+
+        if not os.path.exists(required_filepath):
+            file_url = "https://git.ligo.org/waveforms/software/lalsuite-waveform-data/-/raw/main/waveform_data/SEOBNRv4ROM_v3.0.hdf5"
+            gdown.download(file_url, required_filepath, quiet=False)
+        else: print(f"{required_filename} found at {required_filepath}")
 
     def _prepare_split(self) -> pd.DataFrame:
         np.random.seed(12)
