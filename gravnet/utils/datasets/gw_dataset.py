@@ -17,14 +17,23 @@ class GWDataset(Dataset):
         self.download = download
 
         if self.download:
-            file_url = "https://drive.google.com/uc?id=1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
-            output_path = os.path.join(self.root, 'dataset.zip')
+            already_exists = False
+            if os.path.exists(os.path.join(self.root, "dataset")):
+                already_exists = (
+                    len(os.listdir(os.path.join(self.root, "dataset"))) == 2 and
+                    len(os.listdir(os.path.join(self.root, "dataset", "gwaves"))) == 256379
+                )
 
-            gdown.download(file_url, output_path, quiet=False)
-            with zipfile.ZipFile(output_path, 'r') as zip_ref:
-                zip_ref.extractall(self.root)
+            if already_exists: print("Files aleady downloaded and verified")
+            else:
+                file_url = "https://drive.google.com/uc?id=1CIi0WDelwFhWDFlCpRe0M9VJJUUKUg7n"
+                output_path = os.path.join(self.root, 'dataset.zip')
 
-            if cleanup: os.remove(os.path.join(self.root, "dataset.zip"))
+                gdown.download(file_url, output_path, quiet=False)
+                with zipfile.ZipFile(output_path, 'r') as zip_ref:
+                    zip_ref.extractall(self.root)
+
+                if cleanup: os.remove(os.path.join(self.root, "dataset.zip"))
 
         self.split_df = self._prepare_split()
 
