@@ -8,3 +8,4 @@ pycbc
 scipy
 torch
 gdown
+torchinfo
