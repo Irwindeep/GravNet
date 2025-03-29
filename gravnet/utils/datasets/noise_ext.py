@@ -10,7 +10,7 @@ from gravnet.utils.gw_injection import inject_waveform
 from numpy.typing import NDArray
 from typing import Tuple
 
-class NoiseSegData(GWDataset):
+class NoiseExtData(GWDataset):
     def __init__(self, root, split, download = False, cleanup = True) -> None:
         super().__init__(root, split, download, cleanup)
     
