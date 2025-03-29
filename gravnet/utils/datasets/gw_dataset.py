@@ -98,17 +98,17 @@ class GWDataset(Dataset):
         if self.split == "train":
             indices = np.concatenate([noise_train_indices, bbh_train_indices, bns_train_indices])
             indices.sort()
-            return df.iloc[indices]
+            return df.iloc[indices].reset_index()
         
         if self.split == "val":
             indices = np.concatenate([noise_val_indices, bbh_val_indices, bns_val_indices])
             indices.sort()
-            return df.iloc[indices]
+            return df.iloc[indices].reset_index()
         
         if self.split == "test":
             indices = np.concatenate([noise_test_indices, bbh_test_indices, bns_test_indices])
             indices.sort()
-            return df.iloc[indices]
+            return df.iloc[indices].reset_index()
         
         raise RuntimeError("Invalid Split")
 
