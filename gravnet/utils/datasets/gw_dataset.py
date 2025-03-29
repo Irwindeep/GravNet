@@ -120,7 +120,7 @@ class GWDataset(Dataset):
         if os.path.exists(cache_file):
             return torch.load(cache_file)
         
-        item = self._get_item(index)
+        item = self._getitem(index)
         torch.save(item, cache_file)
         return item
 
