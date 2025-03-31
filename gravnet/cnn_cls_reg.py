@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class CNNClsReg(nn.Module):
-    def __init__(self):
+    def __init__(self, task: str = "regression") -> None:
         super(CNNClsReg, self).__init__()
 
+        self.task = task
         self.conv1 = nn.Conv1d(in_channels=1, out_channels=16, kernel_size=16, stride=1, padding=0)
         self.pool1 = nn.MaxPool1d(kernel_size=4, stride=4)
 
@@ -21,7 +22,7 @@ class CNNClsReg(nn.Module):
         self.reg_head = nn.Linear(128, 3)
         self.class_head = nn.Linear(128, 3)
 
-    def forward(self, input: torch.Tensor, task: str = 'regression') -> torch.Tensor:
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
         x = input.unsqueeze(1)
 
         x = self.pool1(F.relu(self.conv1(x)))
@@ -32,6 +33,6 @@ class CNNClsReg(nn.Module):
         x = F.relu(self.fc_1(x))
         x = F.relu(self.fc_2(x))
 
-        if task == 'regression': return self.reg_head(x)
-        elif task == 'classification': return self.class_head(x)
-        raise ValueError(f"Task - {task} is not supported")
+        if self.task == 'regression': return self.reg_head(x)
+        elif self.task == 'classification': return self.class_head(x)
+        raise ValueError(f"Task - {self.task} is not supported")
