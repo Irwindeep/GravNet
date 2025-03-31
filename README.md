@@ -11,8 +11,6 @@ GravNet is a deep learning project aimed at detecting gravitational waves from a
 - [Installation](#installation)
 - [Usage](#usage)
 - [File Structure](#file-structure)
-- [Contributing](#contributing)
-- [License](#license)
 - [Acknowledgements](#acknowledgements)
 
 ## Overview
