@@ -34,3 +34,4 @@ class CNNClsReg(nn.Module):
 
         if task == 'regression': return self.reg_head(x)
         elif task == 'classification': return self.class_head(x)
+        raise ValueError(f"Task - {task} is not supported")
