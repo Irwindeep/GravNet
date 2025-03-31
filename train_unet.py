@@ -29,7 +29,7 @@ model = UNet(
 ).to(device)
 print(model.summary(input_size=(batch_size, 4096)))
 
-epochs, lr = 100, 1e-3
+epochs, lr = 40, 1e-3
 loss_fn = nn.MSELoss()
 optim = torch.optim.Adam(model.parameters(), lr=lr)
 
@@ -37,8 +37,8 @@ train_losses, val_losses = [], []
 best_val_loss = float("inf")
 for epoch in range(1, epochs+1):
     desc = f"Epoch [{epoch:02d}/{epochs}]"
-    train_loss = train_epoch(model, train_loader, loss_fn, optim, desc)
-    val_loss = val_epoch(model, val_loader, loss_fn)
+    train_loss = train_epoch(model, loss_fn, optim, train_loader, desc)
+    val_loss = val_epoch(model, loss_fn, val_loader)
 
     train_losses.append(train_loss)
     val_losses.append(val_loss)
