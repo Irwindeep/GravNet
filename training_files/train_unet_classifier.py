@@ -23,7 +23,7 @@ train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size, shuffle=False)
 
-model = UNetFineTuned(backbone_path="model_weights/unet_noise_extr.pth").to(device)
+model = UNetFineTuned(backbone_path="../model_weights/unet_noise_extr.pth").to(device)
 print(model.summary(input_size=(batch_size, 4096)))
 
 epochs, lr = 10, 1e-3

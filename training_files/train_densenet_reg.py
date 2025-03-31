@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from gravnet.utils.datasets import ParamEstData
 from torch.utils.data import DataLoader
-from gravnet.unet import UNetFineTuned
+from gravnet.densenet import DenseNet
 from gravnet.training import train_epoch, val_epoch
 from tqdm.auto import tqdm
 
@@ -23,10 +23,8 @@ train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size, shuffle=False)
 
-model = UNetFineTuned(backbone_path="../model_weights/unet_noise_extr.pth").to(device)
-print(model.summary(input_size=(batch_size, 4096)))
-
-epochs, lr = 10, 1e-3
+model = DenseNet(in_channels=1, num_params=3).to(device)
+epochs, lr = 50, 1e-3
 loss_fn = nn.MSELoss()
 optim = torch.optim.Adam(model.parameters(), lr=lr)
 
