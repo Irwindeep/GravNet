@@ -19,9 +19,9 @@ val_dataset = NoiseExtData(root="gw_data", split="val", download=False)
 test_dataset = NoiseExtData(root="gw_data", split="test", download=False)
 
 batch_size = 64
-train_loader = DataLoader(train_dataset, batch_size, shuffle=True, num_workers=2)
-val_loader = DataLoader(val_dataset, batch_size, shuffle=False, num_workers=2)
-test_loader = DataLoader(test_dataset, batch_size, shuffle=False, num_workers=2)
+train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
+val_loader = DataLoader(val_dataset, batch_size, shuffle=False)
+test_loader = DataLoader(test_dataset, batch_size, shuffle=False)
 
 model = UNet(
     encoder_channels=[1, 32, 64, 128, 256, 512],
