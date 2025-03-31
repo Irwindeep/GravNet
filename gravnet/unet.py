@@ -71,3 +71,23 @@ class UNet(nn.Module):
     
     def summary(self, input_size: Tuple[int, ...], depth: int = 2) -> str:
         return str(summary(self, input_size, depth=depth))
+
+class UNetFineTuned(nn.Module):
+    def __init__(self, backbone_path: str) -> None:
+        super(UNetFineTuned, self).__init__()
+        backbone = UNet([1, 32, 64, 128, 256, 512], kernel_size=3)
+        backbone.load_state_dict(torch.load(backbone_path, weights_only=True))
+
+        self.encoder = backbone.encoder
+        self.pool = nn.MaxPool1d(2, 2)
+        self.flatten = nn.Flatten()
+        self.fc = nn.Linear(4096, 3)
+
+    def forward(self, input):
+        bottleneck, _ = self.encoder(input)
+        flattened_bottleneck = self.flatten(self.pool(bottleneck))
+        output = self.fc(flattened_bottleneck)
+        return output
+    
+    def summary(self, input_size: Tuple[int, ...], depth: int = 2) -> str:
+        return str(summary(self, input_size, depth=depth))
