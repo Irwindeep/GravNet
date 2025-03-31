@@ -3,6 +3,7 @@ from . import functional
 from .training import train_epoch, val_epoch
 from .cnn_cls_reg import CNNClsReg
 from .densenet import DenseNet
+from .resnet import ResNet
 from .unet import (
     Encoder as UNetEncoder,
     Decoder as UNetDecoder,
@@ -15,6 +16,7 @@ __all__ = [
     "DenseNet",
     "functional",
     "gw_injection",
+    "ResNet",
     "train_epoch",
     "UNet",
     "UNetDecoder",

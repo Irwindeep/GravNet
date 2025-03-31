@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from typing import Optional
 
 # Functions required for UNet
 class DepthwiseSeparableConv1d(nn.Module):
@@ -85,3 +86,33 @@ class Transition(nn.Module):
         x = self.conv(x)
         x = self.pool(x)
         return x
+
+# Functions required for ResNet implementation
+class ResidualBlock(nn.Module):
+    def __init__(self, in_planes: int, out_planes: int, stride: int = 1) -> None:
+        super().__init__()
+        self.conv1: nn.Conv1d = nn.Conv1d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1)
+        self.bn1: nn.BatchNorm1d = nn.BatchNorm1d(out_planes)
+        self.conv2: nn.Conv1d = nn.Conv1d(out_planes, out_planes, kernel_size=3, stride=1, padding=1)
+        self.bn2: nn.BatchNorm1d = nn.BatchNorm1d(out_planes)
+        self.relu: nn.ReLU = nn.ReLU(inplace=True)
+
+        self.downsample: Optional[nn.Sequential] = None
+        if stride != 1 or in_planes != out_planes:
+            self.downsample = nn.Sequential(
+                nn.Conv1d(in_planes, out_planes, kernel_size=1, stride=stride),
+                nn.BatchNorm1d(out_planes)
+            )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        identity: torch.Tensor = x
+        out: torch.Tensor = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+        if self.downsample is not None:
+            identity = self.downsample(x)
+        out += identity
+        out = self.relu(out)
+        return out
