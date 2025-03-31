@@ -74,7 +74,7 @@ Gravitational wave astronomy has opened a new window into the universe. GravNet 
   Directory for gravitational wave datasets used for training and evaluation.
 
 - **/model_weights:**  
-  Pre-trained weights for the deep learning models.
+  Pre-trained weights for the deep learning models. Regression files for Parameter Estmimation and Classification for Wave Detection
 
 - **/training_files:**  
   Scripts and configuration files related to training of models.

@@ -3,7 +3,7 @@ from . import functional
 from .training import train_epoch, val_epoch
 from .cnn_cls_reg import CNNClsReg
 from .densenet import DenseNet
-from .resnet import ResNet
+from .resnet import ResNet, ResNetClassifier
 from .unet import (
     Encoder as UNetEncoder,
     Decoder as UNetDecoder,
