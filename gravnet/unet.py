@@ -17,7 +17,7 @@ class Encoder(nn.Module):
             Conv1dBlock(in_channel, out_channel, kernel_size)
             for in_channel, out_channel in zip(in_channels, out_channels)
         ])
-        self.pool_layers = nn.ModuleList([nn.MaxPool1d(2, 2) for _ in range(len(in_channels))])
+        self.pool_layers = nn.ModuleList([nn.MaxPool1d(4, 4) for _ in range(len(in_channels))])
         self.bottleneck = DepthwiseSeparableConv1d(channels[-2], channels[-1], kernel_size=kernel_size, padding=(kernel_size-1)//2)
 
     def forward(self, input: torch.Tensor) -> Tuple[torch.Tensor, List[torch.Tensor]]:
@@ -37,7 +37,7 @@ class Decoder(nn.Module):
         in_channels, out_channels = channels[:-1], channels[1:]
 
         self.upconv_layers = nn.ModuleList([
-            nn.ConvTranspose1d(in_channel, out_channel, kernel_size=2, stride=2)
+            nn.ConvTranspose1d(in_channel, out_channel, kernel_size=4, stride=4)
             for in_channel, out_channel in zip(in_channels[:-1], out_channels[:-1])
         ])
 
@@ -73,10 +73,10 @@ class UNet(nn.Module):
         return str(summary(self, input_size, depth=depth))
 
 class UNetFineTuned(nn.Module):
-    def __init__(self, backbone_path: str) -> None:
+    def __init__(self, backbone_path: str, device="cpu") -> None:
         super(UNetFineTuned, self).__init__()
         backbone = UNet([1, 32, 64, 128, 256, 512], kernel_size=3)
-        backbone.load_state_dict(torch.load(backbone_path, weights_only=True))
+        backbone.load_state_dict(torch.load(backbone_path, weights_only=True, map_location=torch.device(device)))
 
         self.encoder = backbone.encoder
         self.pool = nn.MaxPool1d(2, 2)
