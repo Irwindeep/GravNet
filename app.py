@@ -177,7 +177,7 @@ if "whitened_strain" in st.session_state:
         from gravnet.densenet import DenseNet
 
         model = DenseNet(in_channels=1, num_params=3).to(device)
-        state = torch.load("model_weights/densenet_cls.pth", map_location=device)
+        state = torch.load("model_weights/densenet_reg.pth", map_location=device)
         model.load_state_dict(state["model_state_dict"] if "model_state_dict" in state else state)
 
         whitened_strain = st.session_state["whitened_strain"]
