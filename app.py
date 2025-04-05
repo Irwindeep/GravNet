@@ -3,16 +3,7 @@ import numpy as np
 from gwpy.timeseries import TimeSeries # type: ignore
 from scipy.signal import welch # type: ignore
 
-st.title("GravNet: GW Data Fetcher & Whitening")
-
-st.markdown("""
-Use the selectors in the sidebar to pick a start and end GPS time, then:
-1. **Fetch** the strain data  
-2. **Whiten** the signal
-3. **Extract Noise** from the signal
-4. **Detect** Gravitational Wave Signal
-5. **Estimate** source Parameters
-""")
+st.title("GravNet: Detection and Parameter Estimation of Gravitational Waves")
 
 st.sidebar.header("GPS Time Selection")
 t0 = st.sidebar.number_input(
