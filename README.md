@@ -2,6 +2,8 @@
 
 GravNet is a deep learning project aimed at detecting gravitational waves from astrophysical sources. This repository contains the source code, training files, pre-trained model weights, and data utilities necessary for replicating and extending the experiments.
 
+Streamlit App: [gravnet-web-demo](https://gravnet-web-demo.streamlit.app/)
+
 ## Table of Contents
 
 - [Overview](#overview)
