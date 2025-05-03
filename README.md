@@ -90,5 +90,5 @@ Gravitational wave astronomy has opened a new window into the universe. GravNet 
 
 ## Acknowledgements
 
-- Special thanks to the contributors and the gravitational wave research community.
+- Special thanks to the contributors: Irwindeep Singh, Ramninder Singh, Vikrant Singh and Sarthak Malviya, and the gravitational wave research community.
 - This project builds on the growing field of deep learning in astrophysics.
