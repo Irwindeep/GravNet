@@ -24,6 +24,8 @@ val_loader = DataLoader(val_dataset, batch_size, shuffle=False)
 test_loader = DataLoader(test_dataset, batch_size, shuffle=False)
 
 model = CNNClsReg(task="classification").to(device)
+pretrained_weights = torch.load("model_weights_reg.pth")
+model.load_state_dict(pretrained_weights, map_location=device)
 epochs, lr = 50, 1e-3
 loss_fn = nn.CrossEntropyLoss()
 optim = torch.optim.Adam(model.parameters(), lr=lr)
@@ -40,7 +42,7 @@ for epoch in range(1, epochs+1):
 
     if val_loss < best_val_loss:
         best_val_loss = val_loss
-        torch.save(model.state_dict(), "model_weights.pth")
+        torch.save(model.state_dict(), "model_weights_cls.pth")
 
 print()
 
